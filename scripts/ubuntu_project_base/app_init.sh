@@ -68,9 +68,21 @@ check_container_status() {
 start_container() {
     local project=$1
     local command=${commands[$project]}
-    local container_name=$(echo $project | awk -F'/' '{print $NF}')  # 提取容器名称
+    local container_name=$(echo $project | awk -F'/' '{print $NF}')  # 默认提取容器名称
 
     echo "启动项目 $project..."
+    echo "执行的命令: $command"
+
+    # 针对 Dify 项目，动态获取容器名称
+    if [[ "$project" == "langgenius/dify-web-1" ]]; then
+        container_name=$(docker ps --format '{{.Names}}' | grep "docker-web")
+        if [ -z "$container_name" ]; then
+            echo "无法获取 Dify 容器名称，请检查 Docker Compose 是否正常运行。"
+            return 1
+        fi
+    fi
+
+    echo "容器名称: $container_name"
 
     # 检查是否已经存在同名容器
     if docker ps -a --format '{{.Names}}' | grep -q "^${container_name}$"; then
@@ -79,7 +91,6 @@ start_container() {
         docker rm "$container_name"
     fi
 
-    echo "执行的命令: $command"  # 打印调试信息
     eval "$command"
     check_container_status "$container_name"
 }
