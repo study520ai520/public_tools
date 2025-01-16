@@ -26,7 +26,6 @@ declare -A commands
 
 commands["langgenius/dify-web-1"]="cd /project/pro/dify/docker && docker compose down && docker compose up -d"
 commands["milvusdb/milvus"]="cd /project/pro/milvus && docker compose down && docker compose up -d"
-
 commands["mongodb"]="docker run -d --name mongodb --shm-size=${SHM_SIZE} -p ${MONGO_OUT_PORT}:27017 -e TZ=Asia/Shanghai -v /project/pro/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=${MONGO_USER} -e MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD} --restart always mongo:${MONGODB_VERSION}"
 commands["neo4j"]="docker run -d --name neo4j --shm-size=${SHM_SIZE} -p 7474:7474 -p 7687:7687 -v /project/pro/neo4j/data:/data -v /project/pro/neo4j/logs:/logs -v /project/pro/neo4j/import:/var/lib/neo4j/import -v /project/pro/neo4j/plugins:/plugins --env NEO4J_AUTH=neo4j/password neo4j"
 commands["yidadaa/chatgpt-next-web"]="docker run -d --shm-size=${SHM_SIZE} -p 10001:3000 -e OPENAI_API_KEY=your_api_key -e CODE=zxc123... yidadaa/chatgpt-next-web"
@@ -75,8 +74,9 @@ start_container() {
 
     # 检查是否已经存在同名容器
     if docker ps -a --format '{{.Names}}' | grep -q "^${container_name}$"; then
-        echo "容器 $container_name 已存在，跳过启动。"
-        return 0
+        echo "容器 $container_name 已存在，停止并删除..."
+        docker stop "$container_name"
+        docker rm "$container_name"
     fi
 
     echo "执行的命令: $command"  # 打印调试信息
