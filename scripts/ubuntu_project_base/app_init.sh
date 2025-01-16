@@ -39,6 +39,7 @@ commands["zilliz/attu"]="docker run -d --name attu --shm-size=${SHM_SIZE} -p 100
 
 # === docker_utils.sh ===
 check_and_create_dir() {
+    print_line
     if [ ! -d "$1" ]; then
         echo "目录 $1 不存在，正在创建..."
         mkdir -p "$1"
@@ -48,6 +49,7 @@ check_and_create_dir() {
 
 # 创建虚拟网络
 create_network() {
+    print_line
     local NETWORK_NAME="my_virtual_network"
 
     # 检查虚拟网络是否存在
@@ -74,6 +76,7 @@ create_network() {
 }
 
 check_container_status() {
+    print_line
     local container_name=$1
     local max_retries=3
     local retry_count=0
@@ -93,6 +96,7 @@ check_container_status() {
 }
 
 start_container() {
+    print_line
     local project=$1
     local command=${commands[$project]}
     local container_name=$(echo $project | awk -F'/' '{print $NF}')  # 默认提取容器名称
@@ -124,6 +128,7 @@ start_container() {
 
 # === project_setup.sh ===
 start_dify() {
+    print_line
     local DIFY_DIR="/project/pro/dify"
 
     if [ ! -d "$DIFY_DIR" ]; then
@@ -139,6 +144,7 @@ start_dify() {
 }
 
 start_milvus() {
+    print_line
     local MILVUS_COMPOSE_URL="https://github.com/milvus-io/milvus/releases/download/${MILVUS_VERSION}/milvus-standalone-docker-compose.yml"
     local MILVUS_COMPOSE_PATH="/project/pro/milvus/docker-compose.yml"
     local MILVUS_DATA_DIR="/project/pro/milvus/data"
@@ -167,6 +173,7 @@ start_milvus() {
 }
 
 start_mongodb() {
+    print_line
     local MONGODB_DATA_DIR="/project/pro/mongodb/data"
     check_and_create_dir "$MONGODB_DATA_DIR"
     echo "启动 MongoDB 容器..."
@@ -174,6 +181,7 @@ start_mongodb() {
 }
 
 start_neo4j() {
+    print_line
     local NEO4J_DATA_DIR="/project/pro/neo4j/data"
     local NEO4J_LOGS_DIR="/project/pro/neo4j/logs"
     local NEO4J_IMPORT_DIR="/project/pro/neo4j/import"
@@ -188,16 +196,21 @@ start_neo4j() {
     start_container "neo4j"
 }
 
+print_line() {
+    echo "================================================="
+}
+
 # === main.sh ===
 main() {
+    print_line
     sudo service docker restart
     echo "等待 Docker 服务启动...10秒"
     sleep 10  
     echo "等待完成，继续执行脚本..."
-
+    print_line
     check_and_create_dir "/project/pro"
     check_and_create_dir "/project/pro/logs"
-
+    print_line
     # 启动各个项目
     for project in "${!projects[@]}"; do
         if [ "${projects[$project]}" -eq 1 ]; then
@@ -210,12 +223,13 @@ main() {
             esac
         fi
     done
-
+    print_line
     # 创建虚拟网络
     echo "等待 虚拟网络...10秒"
     sleep 10  
     create_network
     echo "等待完成，继续执行脚本..."
+    print_line
 
     echo "部署完成，请检查日志文件：/project/pro/logs/app_init.log"
 }
