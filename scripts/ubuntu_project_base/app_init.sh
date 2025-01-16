@@ -46,6 +46,33 @@ check_and_create_dir() {
     fi
 }
 
+# 创建虚拟网络
+create_network() {
+    local NETWORK_NAME="my_virtual_network"
+
+    # 检查虚拟网络是否存在
+    if ! docker network ls | grep -q "$NETWORK_NAME"; then
+        echo "网络 $NETWORK_NAME 不存在，正在创建..."
+        docker network create "$NETWORK_NAME"
+    else
+        echo "网络 $NETWORK_NAME 已存在。"
+    fi
+
+    # 将所有运行中的容器加入到该网络
+    for container in $(docker ps -q); do
+        if ! docker network inspect "$NETWORK_NAME" | grep -q "$container"; then
+            echo "将容器 $container 加入网络 $NETWORK_NAME..."
+            docker network connect "$NETWORK_NAME" "$container"
+        else
+            echo "容器 $container 已经连接到网络 $NETWORK_NAME。"
+        fi
+    done
+
+    # 获取虚拟网络的网关 IP 地址
+    network_gateway_ip=$(docker network inspect "$NETWORK_NAME" --format='{{range .IPAM.Config}}{{.Gateway}}{{end}}')
+    echo "网络 $NETWORK_NAME 的网关 IP 地址为: $network_gateway_ip"
+}
+
 check_container_status() {
     local container_name=$1
     local max_retries=3
@@ -183,6 +210,12 @@ main() {
             esac
         fi
     done
+
+    # 创建虚拟网络
+    echo "等待 虚拟网络...10秒"
+    sleep 10  
+    create_network
+    echo "等待完成，继续执行脚本..."
 
     echo "部署完成，请检查日志文件：/project/pro/logs/app_init.log"
 }
