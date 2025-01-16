@@ -54,7 +54,7 @@ check_container_status() {
 
     echo "检查容器 $container_name 状态..."
     while [ $retry_count -lt $max_retries ]; do
-        if docker ps | grep -q "$container_name"; then
+        if docker ps --format '{{.Names}}' | grep -q "^${container_name}$"; then
             echo "容器 $container_name 运行正常"
             return 0
         fi
@@ -69,11 +69,19 @@ check_container_status() {
 start_container() {
     local project=$1
     local command=${commands[$project]}
+    local container_name=$(echo $project | awk -F'/' '{print $NF}')  # 提取容器名称
 
     echo "启动项目 $project..."
-    echo "执行的命令: $command"  # 添加调试信息
+
+    # 检查是否已经存在同名容器
+    if docker ps -a --format '{{.Names}}' | grep -q "^${container_name}$"; then
+        echo "容器 $container_name 已存在，跳过启动。"
+        return 0
+    fi
+
+    echo "执行的命令: $command"  # 打印调试信息
     eval "$command"
-    check_container_status "$(echo $project | awk -F'/' '{print $NF}')"
+    check_container_status "$container_name"
 }
 
 # === project_setup.sh ===
