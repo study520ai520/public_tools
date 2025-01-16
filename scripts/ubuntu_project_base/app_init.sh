@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo service docker start
 
 # === config.sh ===
 SHM_SIZE="4g"
