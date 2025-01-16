@@ -8,8 +8,6 @@ MONGO_USER="admin"
 MONGO_PASSWORD="admin123"
 MONGO_OUT_PORT="27017"
 
-
-
 declare -A projects
 projects["vinlic/qwen-free-api"]=0
 projects["vinlic/kimi-free-api"]=1
@@ -73,6 +71,7 @@ start_container() {
     local command=${commands[$project]}
 
     echo "启动项目 $project..."
+    echo "执行的命令: $command"  # 添加调试信息
     eval "$command"
     check_container_status "$(echo $project | awk -F'/' '{print $NF}')"
 }
@@ -147,7 +146,6 @@ start_neo4j() {
 main() {
     sudo service docker restart
     echo "等待 Docker 服务启动...10秒"
-    # 等待 10 秒，确保 Docker 服务启动完成
     sleep 10  
     echo "等待完成，继续执行脚本..."
 
