@@ -97,7 +97,7 @@ start_dify() {
     fi
 
     echo "启动 Dify 容器..."
-    start_container "langgenius/dify-web"
+    start_container "langgenius/dify-web-1"
 }
 
 start_milvus() {
@@ -132,7 +132,7 @@ start_mongodb() {
     local MONGODB_DATA_DIR="/project/pro/mongodb/data"
     check_and_create_dir "$MONGODB_DATA_DIR"
     echo "启动 MongoDB 容器..."
-    start_container "mongo"
+    start_container "mongodb"
 }
 
 start_neo4j() {
