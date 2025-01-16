@@ -1,6 +1,5 @@
 #!/bin/bash
-sudo service docker restart
-sleep 10  # 等待 10 秒，确保 Docker 服务启动完成
+
 # === config.sh ===
 SHM_SIZE="4g"
 MILVUS_VERSION="v2.4.9"
@@ -146,6 +145,12 @@ start_neo4j() {
 
 # === main.sh ===
 main() {
+    sudo service docker restart
+    echo "等待 Docker 服务启动...10秒"
+    # 等待 10 秒，确保 Docker 服务启动完成
+    sleep 10  
+    echo "等待完成，继续执行脚本..."
+
     check_and_create_dir "/project/pro"
     check_and_create_dir "/project/pro/logs"
 
