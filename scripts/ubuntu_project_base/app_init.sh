@@ -1,6 +1,6 @@
 #!/bin/bash
-sudo service docker start
-
+sudo service docker restart
+sleep 10  # 等待 10 秒，确保 Docker 服务启动完成
 # === config.sh ===
 SHM_SIZE="4g"
 MILVUS_VERSION="v2.4.9"
