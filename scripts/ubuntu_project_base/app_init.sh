@@ -15,7 +15,7 @@ projects["vinlic/deepseek-free-api"]=1
 projects["vinlic/glm-free-api"]=0
 projects["vinlic/metaso-free-api"]=0
 projects["vinlic/step-free-api"]=0
-projects["langgenius/dify-web"]=1
+projects["langgenius/dify-web-1"]=1
 projects["milvusdb/milvus"]=0
 projects["zilliz/attu"]=0
 projects["mongo"]=1
@@ -24,7 +24,7 @@ projects["yidadaa/chatgpt-next-web"]=0
 
 declare -A commands
 
-commands["langgenius/dify-web"]="cd /project/pro/dify/docker && docker compose down && docker compose up -d"
+commands["langgenius/dify-web-1"]="cd /project/pro/dify/docker && docker compose down && docker compose up -d"
 commands["milvusdb/milvus"]="cd /project/pro/milvus && docker compose down && docker compose up -d"
 
 commands["mongo"]="docker run -d --name mongodb --shm-size=${SHM_SIZE} -p ${MONGO_OUT_PORT}:27017 -e TZ=Asia/Shanghai -v /project/pro/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=${MONGO_USER} -e MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD} --restart always mongo:${MONGODB_VERSION}"
