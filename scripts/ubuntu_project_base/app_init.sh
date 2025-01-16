@@ -18,7 +18,7 @@ projects["vinlic/step-free-api"]=0
 projects["langgenius/dify-web-1"]=1
 projects["milvusdb/milvus"]=0
 projects["zilliz/attu"]=0
-projects["mongo"]=1
+projects["mongodb"]=1
 projects["neo4j"]=1
 projects["yidadaa/chatgpt-next-web"]=0
 
@@ -27,7 +27,7 @@ declare -A commands
 commands["langgenius/dify-web-1"]="cd /project/pro/dify/docker && docker compose down && docker compose up -d"
 commands["milvusdb/milvus"]="cd /project/pro/milvus && docker compose down && docker compose up -d"
 
-commands["mongo"]="docker run -d --name mongodb --shm-size=${SHM_SIZE} -p ${MONGO_OUT_PORT}:27017 -e TZ=Asia/Shanghai -v /project/pro/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=${MONGO_USER} -e MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD} --restart always mongo:${MONGODB_VERSION}"
+commands["mongodb"]="docker run -d --name mongodb --shm-size=${SHM_SIZE} -p ${MONGO_OUT_PORT}:27017 -e TZ=Asia/Shanghai -v /project/pro/mongodb/data:/data/db -e MONGO_INITDB_ROOT_USERNAME=${MONGO_USER} -e MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD} --restart always mongo:${MONGODB_VERSION}"
 commands["neo4j"]="docker run -d --name neo4j --shm-size=${SHM_SIZE} -p 7474:7474 -p 7687:7687 -v /project/pro/neo4j/data:/data -v /project/pro/neo4j/logs:/logs -v /project/pro/neo4j/import:/var/lib/neo4j/import -v /project/pro/neo4j/plugins:/plugins --env NEO4J_AUTH=neo4j/password neo4j"
 commands["yidadaa/chatgpt-next-web"]="docker run -d --shm-size=${SHM_SIZE} -p 10001:3000 -e OPENAI_API_KEY=your_api_key -e CODE=zxc123... yidadaa/chatgpt-next-web"
 commands["vinlic/qwen-free-api"]="docker run -it -d --init --name qwen-free-api --shm-size=${SHM_SIZE} -p 10002:8000 -e TZ=Asia/Shanghai vinlic/qwen-free-api"
@@ -164,9 +164,9 @@ main() {
     for project in "${!projects[@]}"; do
         if [ "${projects[$project]}" -eq 1 ]; then
             case $project in
-                "langgenius/dify-web") start_dify ;;
+                "langgenius/dify-web-1") start_dify ;;
                 "milvusdb/milvus") start_milvus ;;
-                "mongo") start_mongodb ;;
+                "mongodb") start_mongodb ;;
                 "neo4j") start_neo4j ;;
                 *) start_container "$project" ;;
             esac
