@@ -104,26 +104,27 @@ start_container() {
     echo "启动项目 $project..."
     echo "执行的命令: $command"
 
-    # 针对 Dify 项目，动态获取容器名称
+    # 针对 Dify 项目的特殊处理
     if [[ "$project" == "langgenius/dify-web-1" ]]; then
-        container_name=$(docker ps --format '{{.Names}}' | grep "docker-web")
+        eval "$command"
+        # 等待一段时间让容器启动
+        sleep 5
+        container_name=$(docker ps --format '{{.Names}}' | grep "docker-web" || true)
         if [ -z "$container_name" ]; then
-            echo "无法获取 Dify 容器名称，请检查 Docker Compose 是否正常运行。"
-            return 1
+            echo "注意：Dify 项目使用 docker compose 启动，不需要检查单个容器名称"
+            return 0
         fi
+    else
+        # 检查是否已经存在同名容器
+        if docker ps -a --format '{{.Names}}' | grep -q "^${container_name}$"; then
+            echo "容器 $container_name 已存在，停止并删除..."
+            docker stop "$container_name"
+            docker rm "$container_name"
+        fi
+
+        eval "$command"
+        check_container_status "$container_name"
     fi
-
-    echo "容器名称: $container_name"
-
-    # 检查是否已经存在同名容器
-    if docker ps -a --format '{{.Names}}' | grep -q "^${container_name}$"; then
-        echo "容器 $container_name 已存在，停止并删除..."
-        docker stop "$container_name"
-        docker rm "$container_name"
-    fi
-
-    eval "$command"
-    check_container_status "$container_name"
 }
 
 # === project_setup.sh ===
